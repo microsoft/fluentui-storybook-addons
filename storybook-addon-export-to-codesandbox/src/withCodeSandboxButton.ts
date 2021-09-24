@@ -11,14 +11,11 @@ export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, cont
       displayToolState(`#anchor--${context.id} .docs-story`, context);
     });
   }
-  
+
   return StoryFn(context);
 };
 
-const getDependencies = (
-  fileContent: string, 
-  dependencies: { [dependencyName: string]: string }
-) => {
+const getDependencies = (fileContent: string, dependencies: { [dependencyName: string]: string }) => {
   // extract dependencies from codesandbox-dependency comments
   const dependencyMatches = fileContent.matchAll(dependencyRegex);
   for (const match of dependencyMatches) {
@@ -28,18 +25,14 @@ const getDependencies = (
   // extract dependencies from imports
   const matches = replaceRelativeImports(fileContent).matchAll(/import .* from ['"](.*?)['"];/g);
 
-  for (const match of matches) 
-  {
-    if (!match[1].startsWith('react/')) 
-    {
+  for (const match of matches) {
+    if (!match[1].startsWith('react/')) {
       const dependency = match[1];
 
-      if( ! dependencies.hasOwnProperty(dependency)) 
-      {
-        if (dependency.startsWith('@fluentui/react-'))
-          dependencies[dependency] = '^9.0.0-alpha'; // FIX until we get to a stable version
-        else 
-          dependencies[dependency] = 'latest';
+      if (!dependencies.hasOwnProperty(dependency)) {
+        if (dependency.startsWith('@fluentui/react-')) dependencies[dependency] = '^9.0.0-alpha';
+        // FIX until we get to a stable version
+        else dependencies[dependency] = 'latest';
       }
     }
   }
@@ -77,13 +70,16 @@ const displayToolState = (selector: string, context: any) => {
   let storyFile = context.parameters?.fullSource;
 
   if (!storyFile) {
-    console.error(`Export to CodeSandbox: Couldn’t find source for story ${context.story}. Did you install the babel plugin?`);
+    console.error(
+      `Export to CodeSandbox: Couldn’t find source for story ${context.story}. Did you install the babel plugin?`,
+    );
     return false;
   }
 
-  const requiredDependencies: { [dependencyName: string]: string } = context.parameters?.exportToCodeSandbox?.requiredDependencies;
+  const requiredDependencies: { [dependencyName: string]: string } =
+    context.parameters?.exportToCodeSandbox?.requiredDependencies;
 
-  if(requiredDependencies == null) {
+  if (requiredDependencies == null) {
     console.error(`Export to CodeSandbox: Please set parameters.exportToCodeSandbox.requiredDependencies.`);
     return false;
   }
@@ -101,7 +97,7 @@ const displayToolState = (selector: string, context: any) => {
   }
 
   const indexTsx = context.parameters?.exportToCodeSandbox?.indexTsx;
-  if(indexTsx == null) {
+  if (indexTsx == null) {
     console.error(
       dedent`Export to CodeSandbox: Please set parameters.exportToCodeSandbox.indexTsx
              to the desired content of index.tsx file.`,
@@ -141,4 +137,3 @@ const displayToolState = (selector: string, context: any) => {
 function replaceRelativeImports(storyFile: string): string {
   return storyFile.replaceAll(dependencyRegex, dependencySubs);
 }
-
