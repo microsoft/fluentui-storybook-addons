@@ -91,7 +91,7 @@ const displayToolState = (selector: string, context: any) => {
     console.error(
       dedent`Export to CodeSandbox: Story "${context.story}" contains relative import without defined package.
              Please add the following comment to the end of each line with relative import:
-             // codesandbox-dependency: [package-name] [pacakge version]`,
+             // codesandbox-dependency: [package-name] [package-version]`,
     );
     return false;
   }
