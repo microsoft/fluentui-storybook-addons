@@ -2,8 +2,8 @@ import { StoryFn as StoryFunction, StoryContext, useEffect, StoryWrapper } from 
 import { getParameters } from 'codesandbox-import-utils/lib/api/define';
 import dedent from 'dedent';
 
-const dependencyRegex = / from '.*?'; \/\/ codesandbox-dependency: (.*?) (.*)/g;
-const dependencySubs = " from '$1';";
+const DEPENDENCY_REGEX = / from '.*?'; \/\/ codesandbox-dependency: (.*?) (.*)/g;
+const DEPENDENCY_SUBS = " from '$1';";
 type PackageDependencies = { [dependencyName: string]: string };
 
 export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, context: StoryContext) => {
@@ -20,7 +20,7 @@ const getDependencies = (fileContent: string, requiredDependencies: PackageDepen
   const dependencies = { ...requiredDependencies };
 
   // extract dependencies from codesandbox-dependency comments
-  const dependencyMatches = fileContent.matchAll(dependencyRegex);
+  const dependencyMatches = fileContent.matchAll(DEPENDENCY_REGEX);
   for (const match of dependencyMatches) {
     dependencies[match[1]] = match[2];
   }
@@ -140,5 +140,5 @@ const displayToolState = (selector: string, context: any) => {
   exportLink.innerText = `Open in CodeSandbox`;
 };
 function replaceRelativeImports(storyFile: string): string {
-  return storyFile.replaceAll(dependencyRegex, dependencySubs);
+  return storyFile.replaceAll(DEPENDENCY_REGEX, DEPENDENCY_SUBS);
 }
