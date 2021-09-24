@@ -1,7 +1,6 @@
 import { StoryFn as StoryFunction, StoryContext, useEffect, StoryWrapper } from '@storybook/addons';
 import { getParameters } from 'codesandbox-import-utils/lib/api/define';
 import dedent from 'dedent';
-import { indexTs, indexHtml } from './exportTemplates';
 
 const dependencyRegex = / from '.*?'; \/\/ codesandbox-dependency: (.*?) (.*)/g;
 const dependencySubs = " from '$1';";
@@ -16,14 +15,10 @@ export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, cont
   return StoryFn(context);
 };
 
-const getDependencies = (fileContent: string) => {
-  const dependencies: { [dependencyName: string]: string } = {}; // [name] = "version"
-
-  // add always necessary dependencies
-  dependencies["react-scripts"] = "latest"; // necessary when using typescript in CodeSandbox
-  dependencies["react-dom"] = "latest"; // necessary for react
-  dependencies["@fluentui/react-components"] = "<9.0.0-alpha.60"; // necessary for theme provider, fixing version because latest doesn’t work in CodeSandbox
-  
+const getDependencies = (
+  fileContent: string, 
+  dependencies: { [dependencyName: string]: string }
+) => {
   // extract dependencies from codesandbox-dependency comments
   const dependencyMatches = fileContent.matchAll(dependencyRegex);
   for (const match of dependencyMatches) {
@@ -82,11 +77,18 @@ const displayToolState = (selector: string, context: any) => {
   let storyFile = context.parameters?.fullSource;
 
   if (!storyFile) {
-    console.error(`Export to CodeSandbox: Couldn’t find source for story ${context.story}.`);
+    console.error(`Export to CodeSandbox: Couldn’t find source for story ${context.story}. Did you install the babel plugin?`);
     return false;
   }
 
-  const dependencies = getDependencies(storyFile);
+  const requiredDependencies: { [dependencyName: string]: string } = context.parameters?.exportToCodeSandbox?.requiredDependencies;
+
+  if(requiredDependencies == null) {
+    console.error(`Export to CodeSandbox: Please set parameters.exportToCodeSandbox.requiredDependencies.`);
+    return false;
+  }
+
+  const dependencies = getDependencies(storyFile, requiredDependencies);
   storyFile = replaceRelativeImports(storyFile);
 
   if (storyFile.match(/import .* from ['"]\./g)) {
@@ -94,6 +96,15 @@ const displayToolState = (selector: string, context: any) => {
       dedent`Export to CodeSandbox: Story "${context.story}" contains relative import without defined package.
              Please add the following comment to the end of each line with relative import:
              // codesandbox-dependency: [package-name] [pacakge version]`,
+    );
+    return false;
+  }
+
+  const indexTsx = context.parameters?.exportToCodeSandbox?.indexTsx;
+  if(indexTsx == null) {
+    console.error(
+      dedent`Export to CodeSandbox: Please set parameters.exportToCodeSandbox.indexTsx
+             to the desired content of index.tsx file.`,
     );
     return false;
   }
@@ -107,11 +118,11 @@ const displayToolState = (selector: string, context: any) => {
       },
       'index.html': {
         isBinary: false,
-        content: indexHtml,
+        content: '<div id="root"></div>',
       },
       'index.tsx': {
         isBinary: false,
-        content: indexTs.replace('STORY_NAME', context.story.replaceAll(' ', '')),
+        content: indexTsx.replace('STORY_NAME', context.story.replaceAll(' ', '')),
       },
       'package.json': {
         isBinary: false,

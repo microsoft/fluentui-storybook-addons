@@ -1,14 +1,8 @@
-import { Button } from '@fluentui/react-button';
+import { Button } from '@fluentui/react-components';
 
 export default {
   title: 'Example/Button',
   component: Button,
 };
 
-export const ExampleErrorStory = () => (
-  <>
-    <span>This story doesn’t have it’s individual story file and therefore will produce error.</span>
-  </>
-);
-
-export { Emphasis } from './ButtonEmphasis.stories';
+export { ButtonAppearance } from './ButtonAppearance.stories';
