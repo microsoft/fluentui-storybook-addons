@@ -33,7 +33,9 @@ const getDependencies = (fileContent: string, requiredDependencies: PackageDepen
       const dependency = match[1];
 
       if (!dependencies.hasOwnProperty(dependency)) {
-        if (dependency.startsWith('@fluentui/react-')) dependencies[dependency] = '^9.0.0-alpha';
+        if (dependency.startsWith('@fluentui/react-')) {
+          dependencies[dependency] = '^9.0.0-alpha';
+        }
         // FIX until we get to a stable version
         else dependencies[dependency] = 'latest';
       }
