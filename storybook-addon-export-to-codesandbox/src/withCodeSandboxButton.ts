@@ -4,6 +4,7 @@ import dedent from 'dedent';
 
 const dependencyRegex = / from '.*?'; \/\/ codesandbox-dependency: (.*?) (.*)/g;
 const dependencySubs = " from '$1';";
+type PackageDependencies = { [dependencyName: string]: string };
 
 export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, context: StoryContext) => {
   if (context.viewMode === 'docs') {
@@ -15,7 +16,7 @@ export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, cont
   return StoryFn(context);
 };
 
-const getDependencies = (fileContent: string, requiredDependencies: { [dependencyName: string]: string }) => {
+const getDependencies = (fileContent: string, requiredDependencies: PackageDependencies) => {
   const dependencies = { ...requiredDependencies };
 
   // extract dependencies from codesandbox-dependency comments
@@ -78,7 +79,7 @@ const displayToolState = (selector: string, context: any) => {
     return false;
   }
 
-  const requiredDependencies: { [dependencyName: string]: string } =
+  const requiredDependencies: PackageDependencies =
     context.parameters?.exportToCodeSandbox?.requiredDependencies;
 
   if (requiredDependencies == null) {
