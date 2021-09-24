@@ -8,7 +8,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/PeterDraex/storybook-addon-export-to-codesandbox"
+    "url": "https://github.com/microsoft/fluentui-storybook-addons"
   },
   "author": "PeterDraex",
   "license": "MIT",
