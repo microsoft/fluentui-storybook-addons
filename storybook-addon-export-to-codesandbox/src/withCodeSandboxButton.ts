@@ -15,7 +15,9 @@ export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, cont
   return StoryFn(context);
 };
 
-const getDependencies = (fileContent: string, dependencies: { [dependencyName: string]: string }) => {
+const getDependencies = (fileContent: string, requiredDependencies: { [dependencyName: string]: string }) => {
+  const dependencies = { ...requiredDependencies };
+
   // extract dependencies from codesandbox-dependency comments
   const dependencyMatches = fileContent.matchAll(dependencyRegex);
   for (const match of dependencyMatches) {
