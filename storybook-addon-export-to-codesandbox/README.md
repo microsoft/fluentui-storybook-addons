@@ -6,6 +6,15 @@ This Storybook plugin adds "Open in CodeSandbox" button to each story displayed 
 
 1. Install the plugin `npm i storybook-addon-export-to-codesandbox`.
 2. Register the plugin in `.storybook/main.js` - Add `'storybook-addon-export-to-codesandbox'` to the list of addons.
+```js
+// .storybook/main.js
+
+module.exports = {
+  // ...
+  addons: ['storybook-addon-export-to-codesandbox', /* ... */],
+};
+```
+
 3. Use .storybook/babel.plugin.js in your Storybook.
 4. Define required parameters in your `.storybook/preview.js`:
 
