@@ -9,6 +9,7 @@
     "lib": ["es2021", "dom"],
     "module": "commonjs",
     "noImplicitAny": true,
+    "allowJs": true,
     "rootDir": "./src",
     "skipLibCheck": true,
     "target": "es5",
