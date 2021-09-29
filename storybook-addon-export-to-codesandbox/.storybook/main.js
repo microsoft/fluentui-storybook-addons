@@ -9,7 +9,7 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            plugins: [require('./babel.plugin')],
+            plugins: [require('../src/babel.plugin')],
           },
         },
       });
