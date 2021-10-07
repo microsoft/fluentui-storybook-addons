@@ -25,7 +25,7 @@ export const parameters = {
     requiredDependencies: {
       'react-dom': 'latest', // for React
       'react-scripts': 'latest', // necessary when using typescript in CodeSandbox
-      '@fluentui/react-components': '^9.0.0-alpha', // necessary for FluentProvider
+      '@fluentui/react-components': '^9.0.0-beta', // necessary for FluentProvider
     },
     // Content of index.tsx in CodeSandbox
     indexTsx: dedent`
@@ -56,5 +56,5 @@ This practice is recommended so that the "Open in CodeSandbox" button would expo
 It’s recommended that your stories don’t contain relative imports. If this is unavoidable, in your case, you might use a `codesandbox-dependency` comment to replace the `from` part of your import, during export. It also allows you to specify required version of your dependency.
 
 ```ts
-import { Button } from '../../Button'; // codesandbox-dependency: @fluentui/react-button ^9.0.0-alpha
+import { Button } from '../../Button'; // codesandbox-dependency: @fluentui/react-button ^9.0.0-beta  
 ```
