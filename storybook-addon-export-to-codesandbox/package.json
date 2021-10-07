@@ -1,6 +1,6 @@
 {
   "name": "storybook-addon-export-to-codesandbox",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "description": "Allows to export Story code to CodeSandbox",
   "keywords": [
     "storybook-addons",
