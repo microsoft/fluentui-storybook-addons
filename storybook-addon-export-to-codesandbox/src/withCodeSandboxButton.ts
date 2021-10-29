@@ -81,8 +81,7 @@ const displayToolState = (selector: string, context: any) => {
     return false;
   }
 
-  const requiredDependencies: PackageDependencies =
-    context.parameters?.exportToCodeSandbox?.requiredDependencies;
+  const requiredDependencies: PackageDependencies = context.parameters?.exportToCodeSandbox?.requiredDependencies;
 
   if (requiredDependencies == null) {
     console.error(`Export to CodeSandbox: Please set parameters.exportToCodeSandbox.requiredDependencies.`);
@@ -139,6 +138,21 @@ const displayToolState = (selector: string, context: any) => {
   exportLink.style.setProperty('color', '#333333');
   exportLink.innerText = `Open in CodeSandbox`;
 };
-function replaceRelativeImports(storyFile: string): string {
+
+export function replaceRelativeImports(storyFile: string): string {
   return storyFile.replaceAll(DEPENDENCY_REGEX, DEPENDENCY_SUBS);
+}
+
+export function replaceAbsoluteImports(storyFile: string): string {
+  const importStatements = [...storyFile.matchAll(/import {(.*)} from '@fluentui\/(.*)?';/g)].map(match => match[0]);
+  const imports = [...importStatements[0].matchAll(/\{([^)]+)\}/g)].map(match =>
+    match[0].replaceAll('{', '').replaceAll('}', '').split(','),
+  ).flat();
+
+  const reactComponentsImportStatement = `import { ${imports.join(', ')} } from '@fluentui/react-components';`
+
+  console.log(reactComponentsImportStatement);
+
+  return storyFile.replaceAll(/import {(.*)?} from '@fluentui\/(.*)?;/g, '');
+
 }
