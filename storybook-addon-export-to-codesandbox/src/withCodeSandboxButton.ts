@@ -102,6 +102,7 @@ const displayToolState = (selector: string, context: StoryContext) => {
         isBinary: false,
         // use originalStoryFn because users can override the `storyName` property.
         // We need the name of the exported function, not the actual story
+        // https://github.com/microsoft/fluentui-storybook-addons/issues/12
         content: indexTsx.replace('STORY_NAME', context.originalStoryFn.name.replaceAll(' ', '')),
       },
       'package.json': {
