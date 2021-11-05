@@ -2,7 +2,7 @@
 import * as Babel from '@babel/core';
 import modifyImportsPlugin from './modifyImports';
 
-export const PLUGIN_NAME = 'fullsource';
+export const PLUGIN_NAME = 'storybook-stories-fullsource';
 
 /**
  * This Babel plugin adds `context.parameters.fullSource` property to Storybook stories,
@@ -33,7 +33,7 @@ export default function (babel: typeof Babel): Babel.PluginObj {
           path.parentPath.isVariableDeclaration()
         ) {
           const transformedCode = transformImportStatements(babel, path.node.init.value, state.file.opts);
-          path.node.init = t.stringLiteral(transformedCode);
+          path.get('init').replaceWith(t.stringLiteral(transformedCode));
         }
       },
 
