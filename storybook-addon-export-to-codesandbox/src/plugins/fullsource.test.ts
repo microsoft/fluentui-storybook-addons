@@ -1,4 +1,3 @@
-
 import pluginTester from 'babel-plugin-tester';
 import * as path from 'path';
 import plugin, { PLUGIN_NAME } from './fullsource';
