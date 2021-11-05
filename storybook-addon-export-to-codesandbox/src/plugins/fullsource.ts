@@ -1,4 +1,3 @@
-
 import * as Babel from '@babel/core';
 import modifyImportsPlugin from './modifyImports';
 
@@ -32,7 +31,12 @@ export default function (babel: typeof Babel): Babel.PluginObj {
           path.node.id.name === '__STORY__' &&
           path.parentPath.isVariableDeclaration()
         ) {
-          const transformedCode = transformImportStatements(babel, path.node.init.value, state.file.opts);
+          const transformedCode = babel.transformSync(path.node.init.value, {
+            ...state.file.opts,
+            comments: false,
+            plugins: [modifyImportsPlugin],
+          }).code;
+
           path.get('init').replaceWith(t.stringLiteral(transformedCode));
         }
       },
@@ -62,19 +66,4 @@ export default function (babel: typeof Babel): Babel.PluginObj {
       },
     },
   };
-}
-
-/**
- * Transforms the source code so that all @fluentui/ imports are from @fluentui/react-components
- *
- * @param babel babel API
- * @param code source code
- * @returns source code with transformed import statements
- */
-export function transformImportStatements(babel: typeof Babel, code: string, opts: Babel.TransformOptions): string {
-  return babel.transformSync(code, {
-    ...opts,
-    comments: false,
-    plugins: [modifyImportsPlugin],
-  }).code;
 }
