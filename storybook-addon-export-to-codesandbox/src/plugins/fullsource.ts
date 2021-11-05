@@ -25,14 +25,14 @@ export default function (babel: typeof Babel): Babel.PluginObj {
   return {
     name: PLUGIN_NAME,
     visitor: {
-      VariableDeclarator(path) {
+      VariableDeclarator(path, state) {
         if (
           t.isIdentifier(path.node.id) &&
           t.isStringLiteral(path.node.init) &&
           path.node.id.name === '__STORY__' &&
           path.parentPath.isVariableDeclaration()
         ) {
-          const transformedCode = transformImportStatements(babel, path.node.init.value);
+          const transformedCode = transformImportStatements(babel, path.node.init.value, state.file.opts);
           path.node.init = t.stringLiteral(transformedCode);
         }
       },
@@ -71,8 +71,10 @@ export default function (babel: typeof Babel): Babel.PluginObj {
  * @param code source code
  * @returns source code with transformed import statements
  */
-export function transformImportStatements(babel: typeof Babel, code: string): string {
+export function transformImportStatements(babel: typeof Babel, code: string, opts: Babel.TransformOptions): string {
   return babel.transformSync(code, {
+    ...opts,
+    comments: false,
     plugins: [modifyImportsPlugin],
   }).code;
 }

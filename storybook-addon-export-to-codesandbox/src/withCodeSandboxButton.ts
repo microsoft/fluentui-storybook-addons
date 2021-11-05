@@ -2,8 +2,6 @@ import { StoryFn as StoryFunction, StoryContext, useEffect, StoryWrapper } from 
 import { getParameters } from 'codesandbox-import-utils/lib/api/define';
 import dedent from 'dedent';
 
-const DEPENDENCY_REGEX = / from '.*?'; \/\/ codesandbox-dependency: (.*?) (.*)/g;
-const DEPENDENCY_SUBS = " from '$1';";
 type PackageDependencies = { [dependencyName: string]: string };
 
 export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, context: StoryContext) => {
@@ -19,25 +17,14 @@ export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, cont
 const getDependencies = (fileContent: string, requiredDependencies: PackageDependencies) => {
   const dependencies = { ...requiredDependencies };
 
-  // extract dependencies from codesandbox-dependency comments
-  const dependencyMatches = fileContent.matchAll(DEPENDENCY_REGEX);
-  for (const match of dependencyMatches) {
-    dependencies[match[1]] = match[2];
-  }
-
-  // extract dependencies from imports
-  const matches = replaceRelativeImports(fileContent).matchAll(/import .* from ['"](.*?)['"];/g);
+  const matches = fileContent.matchAll(/import .* from ['"](.*?)['"];/g);
 
   for (const match of matches) {
     if (!match[1].startsWith('react/')) {
       const dependency = match[1];
 
       if (!dependencies.hasOwnProperty(dependency)) {
-        if (dependency.startsWith('@fluentui/react-')) {
-          dependencies[dependency] = '^9.0.0-beta';
-        }
-        // FIX until we get to a stable version
-        else dependencies[dependency] = 'latest';
+        dependencies[dependency] = 'latest';
       }
     }
   }
@@ -81,8 +68,7 @@ const displayToolState = (selector: string, context: any) => {
     return false;
   }
 
-  const requiredDependencies: PackageDependencies =
-    context.parameters?.exportToCodeSandbox?.requiredDependencies;
+  const requiredDependencies: PackageDependencies = context.parameters?.exportToCodeSandbox?.requiredDependencies;
 
   if (requiredDependencies == null) {
     console.error(`Export to CodeSandbox: Please set parameters.exportToCodeSandbox.requiredDependencies.`);
@@ -90,16 +76,6 @@ const displayToolState = (selector: string, context: any) => {
   }
 
   const dependencies = getDependencies(storyFile, requiredDependencies);
-  storyFile = replaceRelativeImports(storyFile);
-
-  if (storyFile.match(/import .* from ['"]\./g)) {
-    console.error(
-      dedent`Export to CodeSandbox: Story "${context.story}" contains relative import without defined package.
-             Please add the following comment to the end of each line with relative import:
-             // codesandbox-dependency: [package-name] [package-version]`,
-    );
-    return false;
-  }
 
   const indexTsx = context.parameters?.exportToCodeSandbox?.indexTsx;
   if (indexTsx == null) {
@@ -139,6 +115,3 @@ const displayToolState = (selector: string, context: any) => {
   exportLink.style.setProperty('color', '#333333');
   exportLink.innerText = `Open in CodeSandbox`;
 };
-function replaceRelativeImports(storyFile: string): string {
-  return storyFile.replaceAll(DEPENDENCY_REGEX, DEPENDENCY_SUBS);
-}

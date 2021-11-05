@@ -9,7 +9,7 @@ export const PLUGIN_NAME = 'modifyImports';
 /**
  * Collects all relative import declarations starting starting with '.' and all @fluentui/ scoped imports
  * Replaces all import declarations with one single import declartion from @fluentui/react-components
- * 
+ *
  * See test fixtures for usage examples
  */
 export default function modifyImportsPlugin(babel: typeof Babel): Babel.PluginObj<PluginState> {
@@ -17,6 +17,12 @@ export default function modifyImportsPlugin(babel: typeof Babel): Babel.PluginOb
 
   return {
     name: PLUGIN_NAME,
+    manipulateOptions: (opts, parserOptions) => {
+      parserOptions.plugins.push('classProperties');
+      parserOptions.plugins.push('jsx');
+      parserOptions.plugins.push('objectRestSpread');
+      parserOptions.plugins.push('typescript');
+    },
     pre() {
       this.imports = [];
     },
@@ -36,6 +42,7 @@ export default function modifyImportsPlugin(babel: typeof Babel): Babel.PluginOb
       ImportDeclaration(path, pluginState) {
         if (
           t.isLiteral(path.node.source) &&
+          !path.node.source.value.startsWith('@fluentui/react-icons') && // react-icons is not exported directly by the Fluent suite package
           (path.node.source.value.startsWith('@fluentui/') || path.node.source.value.startsWith('.'))
         ) {
           path.node.specifiers.forEach(specifier => {
