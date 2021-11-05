@@ -40,10 +40,12 @@ export default function modifyImportsPlugin(babel: typeof Babel): Babel.PluginOb
       },
 
       ImportDeclaration(path, pluginState) {
+        const importSource = path.node.source;
+
         if (
           t.isLiteral(path.node.source) &&
-          !path.node.source.value.startsWith('@fluentui/react-icons') && // react-icons is not exported directly by the Fluent suite package
-          (path.node.source.value.startsWith('@fluentui/') || path.node.source.value.startsWith('.'))
+          !importSource.value.startsWith('@fluentui/react-icons') && // react-icons is not exported directly by the Fluent suite package
+          (importSource.value.startsWith('@fluentui/') || importSource.value.startsWith('.'))
         ) {
           path.node.specifiers.forEach(specifier => {
             if (
