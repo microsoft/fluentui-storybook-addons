@@ -32,7 +32,7 @@ const getDependencies = (fileContent: string, requiredDependencies: PackageDepen
   return dependencies;
 };
 
-const displayToolState = (selector: string, context: any) => {
+const displayToolState = (selector: string, context: StoryContext) => {
   let exportLink = document.createElement('a');
   exportLink.style.setProperty('position', 'absolute');
   exportLink.style.setProperty('bottom', '0');
@@ -85,6 +85,7 @@ const displayToolState = (selector: string, context: any) => {
     );
     return false;
   }
+  console.log(context);
 
   const defaultFileToPreview = encodeURIComponent('/example.tsx');
   const codeSandboxParameters = getParameters({
@@ -99,7 +100,9 @@ const displayToolState = (selector: string, context: any) => {
       },
       'index.tsx': {
         isBinary: false,
-        content: indexTsx.replace('STORY_NAME', context.story.replaceAll(' ', '')),
+        // use originalStoryFn because users can override the `storyName` property.
+        // We need the name of the exported function, not the actual story
+        content: indexTsx.replace('STORY_NAME', context.originalStoryFn.name.replaceAll(' ', '')),
       },
       'package.json': {
         isBinary: false,
