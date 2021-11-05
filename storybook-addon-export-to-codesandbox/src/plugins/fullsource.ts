@@ -1,25 +1,46 @@
+import * as Babel from '@babel/core';
+import modifyImportsPlugin from './modifyImports';
+
+export const PLUGIN_NAME = 'storybook-stories-fullsource';
+
 /**
  * This Babel plugin adds `context.parameters.fullSource` property to Storybook stories,
  * which contains source of of the file where story is present.
- * 
+ *
  * Specifically, it finds this expression in a story file: storyName.parameters = ...
  * And adds the following expression after it: storyName.parameters.fullSource = __STORY__;
- * 
- * The __STORY__ variable is added to each story file by 
+ *
+ * The __STORY__ variable is added to each story file by
  * [Storybook’s webpack loader](https://github.com/storybookjs/storybook/tree/next/lib/source-loader)
  * and contains source code of the story file.
- * 
+ *
  * This plugin is utilized by Export to CodeSandbox.
- * 
+ *
  * @param {import('@babel/core')} babel
  * @returns {import('@babel/core').PluginObj}
  */
- module.exports = function (babel) {
+export default function (babel: typeof Babel): Babel.PluginObj {
   const { types: t } = babel;
-
   return {
-    name: 'literal-replacer',
+    name: PLUGIN_NAME,
     visitor: {
+      VariableDeclarator(path, state) {
+        if (
+          t.isIdentifier(path.node.id) &&
+          t.isStringLiteral(path.node.init) &&
+          path.node.id.name === '__STORY__' &&
+          path.parentPath.isVariableDeclaration()
+        ) {
+          const transformedCode = babel.transformSync(path.node.init.value, {
+            ...state.file.opts,
+            comments: false,
+            plugins: [modifyImportsPlugin],
+          }).code;
+
+          path.get('init').replaceWith(t.stringLiteral(transformedCode));
+        }
+      },
+
       MemberExpression(path) {
         if (
           t.isIdentifier(path.node.property) &&
@@ -45,4 +66,4 @@
       },
     },
   };
-};
+}
