@@ -34,6 +34,7 @@ const getDependencies = (fileContent: string, requiredDependencies: PackageDepen
 
 const displayToolState = (selector: string, context: StoryContext) => {
   let exportLink = document.createElement('a');
+  exportLink.className = 'with-code-sandbox-button';
   exportLink.style.setProperty('position', 'absolute');
   exportLink.style.setProperty('bottom', '0');
   exportLink.style.setProperty('right', '90px');
