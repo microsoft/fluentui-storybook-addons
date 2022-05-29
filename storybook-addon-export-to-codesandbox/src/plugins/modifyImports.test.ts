@@ -4,7 +4,12 @@ import plugin, { PLUGIN_NAME } from './modifyImports';
 
 const fixturesDir = path.join(__dirname, `__fixtures__/${PLUGIN_NAME}`);
 pluginTester({
-  pluginOptions: { '@fluentui/react-button': {}, '@fluentui/react-menu': {}, '@fluentui/react-link': {} },
+  pluginOptions: {
+    '@fluentui/react-button': {},
+    '@fluentui/react-menu': {},
+    '@fluentui/react-link': {},
+    '@fluentui/react-unstable-component': { replace: '@fluentui/react-components/unstable' },
+  },
   pluginName: PLUGIN_NAME,
   plugin,
   fixtures: fixturesDir,
