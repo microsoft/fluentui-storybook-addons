@@ -4,7 +4,8 @@ import plugin, { PLUGIN_NAME } from './fullsource';
 
 const fixturesDir = path.join(__dirname, `__fixtures__/${PLUGIN_NAME}`);
 pluginTester({
+  pluginOptions: { '@fluentui/react-button': {}, '@fluentui/react-menu': {}, '@fluentui/react-link': {} },
   pluginName: PLUGIN_NAME,
   plugin,
   fixtures: fixturesDir,
-})
+});

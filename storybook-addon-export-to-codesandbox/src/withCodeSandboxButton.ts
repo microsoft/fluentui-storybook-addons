@@ -14,24 +14,6 @@ export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, cont
   return StoryFn(context);
 };
 
-const getDependencies = (fileContent: string, requiredDependencies: PackageDependencies) => {
-  const dependencies = { ...requiredDependencies };
-
-  const matches = fileContent.matchAll(/import .* from ['"](.*?)['"];/g);
-
-  for (const match of matches) {
-    if (!match[1].startsWith('react/')) {
-      const dependency = match[1];
-
-      if (!dependencies.hasOwnProperty(dependency)) {
-        dependencies[dependency] = 'latest';
-      }
-    }
-  }
-
-  return dependencies;
-};
-
 const displayToolState = (selector: string, context: StoryContext) => {
   let exportLink = document.createElement('a');
   exportLink.className = 'with-code-sandbox-button';
@@ -69,14 +51,12 @@ const displayToolState = (selector: string, context: StoryContext) => {
     return false;
   }
 
-  const requiredDependencies: PackageDependencies = context.parameters?.exportToCodeSandbox?.requiredDependencies;
+  const dependencies: PackageDependencies = context.parameters?.exportToCodeSandbox?.requiredDependencies;
 
-  if (requiredDependencies == null) {
+  if (dependencies == null) {
     console.error(`Export to CodeSandbox: Please set parameters.exportToCodeSandbox.requiredDependencies.`);
     return false;
   }
-
-  const dependencies = getDependencies(storyFile, requiredDependencies);
 
   const indexTsx = context.parameters?.exportToCodeSandbox?.indexTsx;
   if (indexTsx == null) {
@@ -108,7 +88,7 @@ const displayToolState = (selector: string, context: StoryContext) => {
       },
       'package.json': {
         isBinary: false,
-        content: JSON.stringify({ dependencies: dependencies }),
+        content: JSON.stringify({ dependencies }),
       },
     },
   });
