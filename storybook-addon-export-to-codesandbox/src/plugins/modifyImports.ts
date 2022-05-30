@@ -1,7 +1,7 @@
 import * as Babel from '@babel/core';
 import * as pkgUp from 'pkg-up';
 import * as fs from 'fs';
-import { PluginOptions } from './fullsource';
+import { BabelPluginOptions } from './fullsource';
 
 interface PluginState extends Babel.PluginPass {
   imports: Record<string, string[]>;
@@ -16,7 +16,10 @@ const DEFAULT_IMPORT = '@fluentui/react-components';
  *
  * See test fixtures for usage examples
  */
-export default function modifyImportsPlugin(babel: typeof Babel, options: PluginOptions): Babel.PluginObj<PluginState> {
+export default function modifyImportsPlugin(
+  babel: typeof Babel,
+  options: BabelPluginOptions,
+): Babel.PluginObj<PluginState> {
   const { types: t } = babel;
 
   return {

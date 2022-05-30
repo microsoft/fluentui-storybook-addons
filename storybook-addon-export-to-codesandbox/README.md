@@ -55,7 +55,7 @@ Each story should be put into its own file with a `.stories.tsx` extension. This
 
 This practice is recommended so that the "Open in CodeSandbox" button would export a single story.
 
-## Depenency replacement with babel
+## Dependency replacement with Babel plugin
 
 ### Configure dependency replacement
 
@@ -82,7 +82,7 @@ module.exports = {
               [
                 require('storybook-addon-export-to-codesandbox').babelPlugin,
                 {
-                  '@fluentui/react-button': {},
+                  '@fluentui/react-button': { replace: '@fluentui/react-components' },
                   // imports of @fluentui/react-unstable-component will be replaced with @fluentui/react-components/unstable
                   '@fluentui/react-unstable-component': { replace: '@fluentui/react-components/unstable'}
                 }
@@ -101,7 +101,7 @@ module.exports = {
 
 > This step runs before any other dependency replacement
 
-When the addon ecounters relative imports in a story, the package name of the closest
+When the addon encounters relative imports in a story, the package name of the closest
 `package.json` in the file tree will be used.
 
 ```json

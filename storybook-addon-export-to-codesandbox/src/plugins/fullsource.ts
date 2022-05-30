@@ -8,10 +8,10 @@ interface DependencyEntry {
    * Replaces the dependency with another
    * @default - @fluentui/react-components
    */
-  replace?: string;
+  replace: string;
 }
 
-export type PluginOptions = Record<string, DependencyEntry>;
+export type BabelPluginOptions = Record<string, DependencyEntry>;
 
 /**
  * This Babel plugin adds `context.parameters.fullSource` property to Storybook stories,
@@ -29,7 +29,7 @@ export type PluginOptions = Record<string, DependencyEntry>;
  * @param {import('@babel/core')} babel
  * @returns {import('@babel/core').PluginObj}
  */
-export default function (babel: typeof Babel, options: PluginOptions): Babel.PluginObj {
+export default function (babel: typeof Babel, options: BabelPluginOptions): Babel.PluginObj {
   const { types: t } = babel;
   return {
     name: PLUGIN_NAME,
