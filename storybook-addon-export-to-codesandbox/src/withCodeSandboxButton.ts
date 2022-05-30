@@ -1,8 +1,8 @@
 import { StoryFn as StoryFunction, StoryContext, useEffect, StoryWrapper } from '@storybook/addons';
 import { getParameters } from 'codesandbox-import-utils/lib/api/define';
 import dedent from 'dedent';
-
-type PackageDependencies = { [dependencyName: string]: string };
+import { getDependencies } from './getDepdencies';
+import type { PackageDependencies } from './getDepdencies';
 
 export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, context: StoryContext) => {
   if (context.viewMode === 'docs') {
@@ -12,24 +12,6 @@ export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, cont
   }
 
   return StoryFn(context);
-};
-
-const getDependencies = (fileContent: string, requiredDependencies: PackageDependencies) => {
-  const dependencies = { ...requiredDependencies };
-
-  const matches = fileContent.matchAll(/import .* from ['"](.*?)['"];/g);
-
-  for (const match of matches) {
-    if (!match[1].startsWith('react/')) {
-      const dependency = match[1];
-
-      if (!dependencies.hasOwnProperty(dependency)) {
-        dependencies[dependency] = 'latest';
-      }
-    }
-  }
-
-  return dependencies;
 };
 
 const displayToolState = (selector: string, context: StoryContext) => {
@@ -69,14 +51,10 @@ const displayToolState = (selector: string, context: StoryContext) => {
     return false;
   }
 
-  const requiredDependencies: PackageDependencies = context.parameters?.exportToCodeSandbox?.requiredDependencies;
+  const requiredDependencies: PackageDependencies = context.parameters?.exportToCodeSandbox?.requiredDependencies ?? {};
+  const optionalDependencies: PackageDependencies = context.parameters?.exportToCodeSandbox?.optionalDependencies ?? {};
 
-  if (requiredDependencies == null) {
-    console.error(`Export to CodeSandbox: Please set parameters.exportToCodeSandbox.requiredDependencies.`);
-    return false;
-  }
-
-  const dependencies = getDependencies(storyFile, requiredDependencies);
+  const dependencies = getDependencies(storyFile, requiredDependencies, optionalDependencies);
 
   const indexTsx = context.parameters?.exportToCodeSandbox?.indexTsx;
   if (indexTsx == null) {

@@ -3,6 +3,16 @@ import modifyImportsPlugin from './modifyImports';
 
 export const PLUGIN_NAME = 'storybook-stories-fullsource';
 
+interface DependencyEntry {
+  /**
+   * Replaces the dependency with another
+   * @default - @fluentui/react-components
+   */
+  replace: string;
+}
+
+export type BabelPluginOptions = Record<string, DependencyEntry>;
+
 /**
  * This Babel plugin adds `context.parameters.fullSource` property to Storybook stories,
  * which contains source of of the file where story is present.
@@ -19,7 +29,7 @@ export const PLUGIN_NAME = 'storybook-stories-fullsource';
  * @param {import('@babel/core')} babel
  * @returns {import('@babel/core').PluginObj}
  */
-export default function (babel: typeof Babel): Babel.PluginObj {
+export default function (babel: typeof Babel, options: BabelPluginOptions): Babel.PluginObj {
   const { types: t } = babel;
   return {
     name: PLUGIN_NAME,
@@ -34,7 +44,7 @@ export default function (babel: typeof Babel): Babel.PluginObj {
           const transformedCode = babel.transformSync(path.node.init.value, {
             ...state.file.opts,
             comments: false,
-            plugins: [modifyImportsPlugin],
+            plugins: [[modifyImportsPlugin, options]],
           }).code;
 
           path.get('init').replaceWith(t.stringLiteral(transformedCode));

@@ -1,7 +1,10 @@
 import * as Babel from '@babel/core';
+import * as pkgUp from 'pkg-up';
+import * as fs from 'fs';
+import { BabelPluginOptions } from './fullsource';
 
 interface PluginState extends Babel.PluginPass {
-  imports: string[];
+  imports: Record<string, string[]>;
 }
 
 export const PLUGIN_NAME = 'storybook-stories-modifyImports';
@@ -12,7 +15,10 @@ export const PLUGIN_NAME = 'storybook-stories-modifyImports';
  *
  * See test fixtures for usage examples
  */
-export default function modifyImportsPlugin(babel: typeof Babel): Babel.PluginObj<PluginState> {
+export default function modifyImportsPlugin(
+  babel: typeof Babel,
+  options: BabelPluginOptions,
+): Babel.PluginObj<PluginState> {
   const { types: t } = babel;
 
   return {
@@ -24,36 +30,48 @@ export default function modifyImportsPlugin(babel: typeof Babel): Babel.PluginOb
       parserOptions.plugins.push('typescript');
     },
     pre() {
-      this.imports = [];
+      this.imports = Object.keys(options).reduce((acc, cur) => {
+        acc[options[cur].replace] = [];
+        return acc;
+      }, {} as PluginState['imports']);
     },
     visitor: {
       Program: {
         exit(path, pluginState) {
-          const specifiers = pluginState.imports.map(i => {
-            return t.importSpecifier(t.identifier(i), t.identifier(i));
-          });
+          Object.entries(pluginState.imports).forEach(([depName, importSpecifiers]) => {
+            const specifiers = importSpecifiers.map(importSpecifier =>
+              t.importSpecifier(t.identifier(importSpecifier), t.identifier(importSpecifier)),
+            );
 
-          if (specifiers.length) {
-            path.node.body.unshift(t.importDeclaration(specifiers, t.stringLiteral('@fluentui/react-components')));
-          }
+            if (specifiers.length) {
+              path.node.body.unshift(t.importDeclaration(specifiers, t.stringLiteral(depName)));
+            }
+          });
         },
       },
 
       ImportDeclaration(path, pluginState) {
-        const importSource = path.node.source;
+        let importSource = path.node.source;
+        if (importSource.value.startsWith('.')) {
+          const pkgJsonPath = pkgUp.sync({ cwd: pluginState.filename });
+          if (pkgJsonPath) {
+            const pkgJsonRaw = fs.readFileSync(pkgJsonPath);
+            importSource = t.stringLiteral(JSON.parse(pkgJsonRaw.toString()).name);
+          } else {
+            throw new Error(
+              'Relative import without a package.json in the file tree. Please report this issue to maintainers',
+            );
+          }
+        }
 
-        if (
-          t.isLiteral(path.node.source) &&
-          !importSource.value.startsWith('@fluentui/react-icons') && // react-icons is not exported directly by the Fluent suite package
-          (importSource.value.startsWith('@fluentui/') || importSource.value.startsWith('.'))
-        ) {
+        if (t.isLiteral(path.node.source) && options[importSource.value]) {
           path.node.specifiers.forEach(specifier => {
             if (
               t.isImportSpecifier(specifier) &&
               t.isIdentifier(specifier.imported) &&
               t.isIdentifier(specifier.local)
             ) {
-              pluginState.imports.push(specifier.imported.name);
+              pluginState.imports[options[importSource.value].replace].push(specifier.imported.name);
             }
           });
 
