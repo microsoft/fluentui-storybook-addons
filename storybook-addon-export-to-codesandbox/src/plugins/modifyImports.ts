@@ -8,7 +8,6 @@ interface PluginState extends Babel.PluginPass {
 }
 
 export const PLUGIN_NAME = 'storybook-stories-modifyImports';
-const DEFAULT_IMPORT = '@fluentui/react-components';
 
 /**
  * Collects all relative import declarations starting starting with '.' and all @fluentui/ scoped imports
@@ -32,7 +31,7 @@ export default function modifyImportsPlugin(
     },
     pre() {
       this.imports = Object.keys(options).reduce((acc, cur) => {
-        acc[options[cur].replace ?? DEFAULT_IMPORT] = [];
+        acc[options[cur].replace] = [];
         return acc;
       }, {} as PluginState['imports']);
     },
@@ -72,7 +71,7 @@ export default function modifyImportsPlugin(
               t.isIdentifier(specifier.imported) &&
               t.isIdentifier(specifier.local)
             ) {
-              pluginState.imports[options[importSource.value].replace ?? DEFAULT_IMPORT].push(specifier.imported.name);
+              pluginState.imports[options[importSource.value].replace].push(specifier.imported.name);
             }
           });
 

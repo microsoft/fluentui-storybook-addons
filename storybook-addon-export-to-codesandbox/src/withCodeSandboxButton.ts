@@ -1,8 +1,8 @@
 import { StoryFn as StoryFunction, StoryContext, useEffect, StoryWrapper } from '@storybook/addons';
 import { getParameters } from 'codesandbox-import-utils/lib/api/define';
 import dedent from 'dedent';
-
-type PackageDependencies = { [dependencyName: string]: string };
+import { getDependencies } from './getDepdencies';
+import type { PackageDependencies } from './getDepdencies';
 
 export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, context: StoryContext) => {
   if (context.viewMode === 'docs') {
@@ -51,12 +51,14 @@ const displayToolState = (selector: string, context: StoryContext) => {
     return false;
   }
 
-  const dependencies: PackageDependencies = context.parameters?.exportToCodeSandbox?.requiredDependencies;
+  const requiredDependencies: PackageDependencies = context.parameters?.exportToCodeSandbox?.requiredDependencies;
 
-  if (dependencies == null) {
+  if (requiredDependencies == null) {
     console.error(`Export to CodeSandbox: Please set parameters.exportToCodeSandbox.requiredDependencies.`);
     return false;
   }
+
+  const dependencies = getDependencies(storyFile, requiredDependencies);
 
   const indexTsx = context.parameters?.exportToCodeSandbox?.indexTsx;
   if (indexTsx == null) {
@@ -88,7 +90,7 @@ const displayToolState = (selector: string, context: StoryContext) => {
       },
       'package.json': {
         isBinary: false,
-        content: JSON.stringify({ dependencies }),
+        content: JSON.stringify({ dependencies: dependencies }),
       },
     },
   });
