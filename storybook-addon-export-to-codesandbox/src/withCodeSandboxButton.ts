@@ -51,14 +51,10 @@ const displayToolState = (selector: string, context: StoryContext) => {
     return false;
   }
 
-  const requiredDependencies: PackageDependencies = context.parameters?.exportToCodeSandbox?.requiredDependencies;
+  const requiredDependencies: PackageDependencies = context.parameters?.exportToCodeSandbox?.requiredDependencies ?? {};
+  const optionalDependencies: PackageDependencies = context.parameters?.exportToCodeSandbox?.optionalDependencies ?? {};
 
-  if (requiredDependencies == null) {
-    console.error(`Export to CodeSandbox: Please set parameters.exportToCodeSandbox.requiredDependencies.`);
-    return false;
-  }
-
-  const dependencies = getDependencies(storyFile, requiredDependencies);
+  const dependencies = getDependencies(storyFile, requiredDependencies, optionalDependencies);
 
   const indexTsx = context.parameters?.exportToCodeSandbox?.indexTsx;
   if (indexTsx == null) {

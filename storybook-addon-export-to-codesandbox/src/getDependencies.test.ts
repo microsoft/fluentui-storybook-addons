@@ -7,7 +7,7 @@ describe('getDependencies', () => {
       import * as allStuff from 'dependency1';
       import { moreStuff } from '@dependency/dependency';
     `;
-    const deps = getDependencies(code, {});
+    const deps = getDependencies(code, {}, {});
 
     expect(deps).toEqual({
       '@dependency/dependency': 'latest',
@@ -23,7 +23,7 @@ describe('getDependencies', () => {
       import { moreStuff2 } from '@dependency/unstable';
       import { moreStuff3 } from '@dependency/unstable/component';
     `;
-    const deps = getDependencies(code, {});
+    const deps = getDependencies(code, {}, {});
 
     expect(deps).toEqual({
       dependency: 'latest',
@@ -31,14 +31,37 @@ describe('getDependencies', () => {
     });
   });
 
+  it('versions in optionalDependencies should win ', () => {
+    const code = `
+      import { stuff } from 'dependency';
+    `;
+    const deps = getDependencies(code, {}, { dependency: '1.0.0' });
+
+    expect(deps).toEqual({
+      dependency: '1.0.0',
+    });
+  });
+
   it('versions in requiredDependencies should win ', () => {
     const code = `
       import { stuff } from 'dependency';
     `;
-    const deps = getDependencies(code, { dependency: '1.0.0' });
+    const deps = getDependencies(code, { dependency: '1.0.0' }, {});
 
     expect(deps).toEqual({
       dependency: '1.0.0',
+    });
+  });
+
+  it('versions in requiredDependencies should win ', () => {
+    const code = `
+      import { stuff } from 'dependency';
+    `;
+    const deps = getDependencies(code, { required: '1.0.0' }, {});
+
+    expect(deps).toEqual({
+      dependency: 'latest',
+      required: '1.0.0',
     });
   });
 });

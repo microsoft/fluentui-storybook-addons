@@ -3,10 +3,15 @@ export type PackageDependencies = { [dependencyName: string]: string };
 /**
  *
  * @param fileContent - code
- * @param requiredDependencies - whose versions will override those found in the code
+ * @param requiredDependencies - dependencies that will always be incldued in package.json
+ * @param optionalDependencies - whose versions will override those found in the code
  * @returns - Map of dependencies and their versions to include in package.json
  */
-export const getDependencies = (fileContent: string, requiredDependencies: PackageDependencies) => {
+export const getDependencies = (
+  fileContent: string,
+  requiredDependencies: PackageDependencies,
+  optionalDependencies: PackageDependencies,
+) => {
   const matches = fileContent.matchAll(/import .* from ['"](.*?)['"];/g);
 
   const dependenciesInCode = Array.from(matches).reduce((dependencies, match) => {
@@ -14,14 +19,14 @@ export const getDependencies = (fileContent: string, requiredDependencies: Packa
       const dependency = parsePackageName(match[1]).name;
 
       if (!dependencies.hasOwnProperty(dependency)) {
-        dependencies[dependency] = requiredDependencies[dependency] ?? 'latest';
+        dependencies[dependency] = optionalDependencies[dependency] ?? 'latest';
       }
     }
 
     return dependencies;
   }, {} as PackageDependencies);
 
-  return dependenciesInCode;
+  return { ...dependenciesInCode, ...requiredDependencies };
 };
 
 // Parsed a scoped package name into name, version, and path.

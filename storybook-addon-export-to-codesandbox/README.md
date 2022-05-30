@@ -29,7 +29,10 @@ export const parameters = {
       react: 'latest',
       'react-dom': 'latest', // for React
       'react-scripts': 'latest', // necessary when using typescript in CodeSandbox
-      '@fluentui/react-components': '^9.0.0-beta', // necessary for FluentProvider
+    },
+    // Dependencies that should be included in the story if it exists in the code
+    optionalDependencies: {
+      '@fluentui/react-icons': '^9.0.0-beta',
     },
     // Content of index.tsx in CodeSandbox
     indexTsx: dedent`
