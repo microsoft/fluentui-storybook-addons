@@ -5,11 +5,11 @@ import { getDependencies } from './getDepdencies';
 import type { PackageDependencies } from './getDepdencies';
 
 export const withCodeSandboxButton: StoryWrapper = (StoryFn: StoryFunction, context: StoryContext) => {
-  if (context.viewMode === 'docs') {
-    useEffect(() => {
+  useEffect(() => {
+    if (context.viewMode === 'docs') {
       displayToolState(`#anchor--${context.id} .docs-story`, context);
-    });
-  }
+    }
+  }, [context]);
 
   return StoryFn(context);
 };
