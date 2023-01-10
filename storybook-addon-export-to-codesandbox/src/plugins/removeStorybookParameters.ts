@@ -15,8 +15,14 @@ export const PLUGIN_NAME = 'babel-plugin-remove-storybook-parameters';
 export default function removeStorybookParameters(babel: typeof Babel): Babel.PluginObj {
   return {
     name: PLUGIN_NAME,
+
+    pre() {
+      this.foundExports = 0;
+    },
+
     visitor: {
       ExportNamedDeclaration(path) {
+        (this.foundExports as number)++;
         path.traverse({
           Identifier(idPath) {
             const binding = idPath.scope.getBinding(idPath.node.name);
@@ -29,6 +35,19 @@ export default function removeStorybookParameters(babel: typeof Babel): Babel.Pl
           },
         });
       },
+    },
+
+    post(file) {
+      if (this.foundExports > 1) {
+        console.warn(
+          '\n\x1b[33m%s\x1b[0m',
+          `WARNING: This file has multiple exports, please fix (${this.foundExports}):`,
+        );
+        console.warn(file.opts.filename);
+        console.log(
+          'Having multiple exports in a story causes issues for the CodeSandbox examples. This rule will be enforced in the future.\n',
+        );
+      }
     },
   };
 }
