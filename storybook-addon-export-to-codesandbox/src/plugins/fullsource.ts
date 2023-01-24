@@ -1,5 +1,6 @@
 import * as Babel from '@babel/core';
 import modifyImportsPlugin from './modifyImports';
+import removeStorybookParameters from './removeStorybookParameters';
 
 export const PLUGIN_NAME = 'storybook-stories-fullsource';
 
@@ -44,7 +45,7 @@ export default function (babel: typeof Babel, options: BabelPluginOptions): Babe
           const transformedCode = babel.transformSync(path.node.init.value, {
             ...state.file.opts,
             comments: false,
-            plugins: [[modifyImportsPlugin, options]],
+            plugins: [[modifyImportsPlugin, options], removeStorybookParameters],
           }).code;
 
           path.get('init').replaceWith(t.stringLiteral(transformedCode));
