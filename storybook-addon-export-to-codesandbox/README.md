@@ -121,3 +121,9 @@ import { Button } from '../index';
 // After
 import { Button } from '@fluentui/react-button';
 ```
+
+## Build the project
+
+1. Run `yarn` in storybook-addon-export-to-codesandbox folder.
+2. Run `yarn buildBabel:cjs`.
+3. Run `yarn build`.
