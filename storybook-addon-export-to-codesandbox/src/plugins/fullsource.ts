@@ -1,4 +1,6 @@
 import * as Babel from '@babel/core';
+import * as prettier from 'prettier';
+
 import modifyImportsPlugin from './modifyImports';
 
 export const PLUGIN_NAME = 'storybook-stories-fullsource';
@@ -15,7 +17,7 @@ export type BabelPluginOptions = Record<string, DependencyEntry>;
 
 /**
  * This Babel plugin adds `context.parameters.fullSource` property to Storybook stories,
- * which contains source of of the file where story is present.
+ * which contains source of the file where story is present.
  *
  * Specifically, it finds this expression in a story file: storyName.parameters = ...
  * And adds the following expression after it: storyName.parameters.fullSource = __STORY__;
@@ -31,6 +33,7 @@ export type BabelPluginOptions = Record<string, DependencyEntry>;
  */
 export default function (babel: typeof Babel, options: BabelPluginOptions): Babel.PluginObj {
   const { types: t } = babel;
+
   return {
     name: PLUGIN_NAME,
     visitor: {
@@ -46,8 +49,9 @@ export default function (babel: typeof Babel, options: BabelPluginOptions): Babe
             comments: false,
             plugins: [[modifyImportsPlugin, options]],
           }).code;
+          const code = prettier.format(transformedCode, { parser: 'babel-ts' });
 
-          path.get('init').replaceWith(t.stringLiteral(transformedCode));
+          path.get('init').replaceWith(t.stringLiteral(code));
         }
       },
 
