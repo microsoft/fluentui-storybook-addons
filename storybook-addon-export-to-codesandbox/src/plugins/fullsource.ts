@@ -47,6 +47,8 @@ export default function (babel: typeof Babel, options: BabelPluginOptions): Babe
         ) {
           const transformedCode = babel.transformSync(path.node.init.value, {
             ...state.file.opts,
+            compact: false,
+            retainLines: true,
             comments: false,
             plugins: [[modifyImportsPlugin, options], removeStorybookParameters],
           }).code;
