@@ -57,7 +57,7 @@
     "concurrently": "^6.2.0",
     "dedent": "^0.7.0",
     "jest": "^27.3.1",
-    "prettier": "^2.3.1",
+    "prettier": "^2.8.3",
     "prop-types": "^15.7.2",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -71,6 +71,7 @@
     "@storybook/components": "^6.3.6",
     "@storybook/core-events": "^6.3.6",
     "@storybook/theming": "^6.3.6",
+    "prettier": "^2.8",
     "react": "^16.8.0 || ^17.0.0",
     "react-dom": "^16.8.0 || ^17.0.0"
   },

@@ -10,7 +10,7 @@ interface PluginState extends Babel.PluginPass {
 export const PLUGIN_NAME = 'storybook-stories-modifyImports';
 
 /**
- * Collects all relative import declarations starting starting with '.' and all @fluentui/ scoped imports
+ * Collects all relative import declarations starting with '.' and all @fluentui/ scoped imports
  * Replaces all import declarations with one single import declartion from @fluentui/react-components
  *
  * See test fixtures for usage examples
