@@ -1,6 +1,11 @@
 import dedent from 'dedent';
 
+/** @type {import('@storybook/addons').Parameters} */
 export const parameters = {
+  docs: {
+    transformSource: (_, story) => story.parameters.fullSource,
+  },
+
   exportToCodeSandbox: {
     requiredDependencies: {
       'react-dom': 'latest', // for React
