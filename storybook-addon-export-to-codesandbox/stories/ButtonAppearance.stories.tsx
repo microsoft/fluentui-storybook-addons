@@ -1,15 +1,27 @@
 import * as React from 'react';
-import { Button } from '@fluentui/react-components';
+import { Button, makeStyles } from '@fluentui/react-components';
 
-export const ButtonAppearance = () => (
-  <>
-    <Button>Default button</Button>
-    <Button appearance="primary">Primary button</Button>
-    <Button appearance="outline">Outline button</Button>
-    <Button appearance="subtle">Subtle button</Button>
-    <Button appearance="transparent">Transparent button</Button>
-  </>
-);
+const useStyles = makeStyles({
+  greenButton: {
+    color: 'green',
+  },
+});
+
+export const ButtonAppearance = () => {
+  const styles = useStyles();
+
+  return (
+    <>
+      <Button>Default button</Button>
+      <Button appearance="primary">Primary button</Button>
+      <Button appearance="outline">Outline button</Button>
+      <Button appearance="subtle">Subtle button</Button>
+      <Button appearance="transparent">Transparent button</Button>
+      <Button className={styles.greenButton}>Custom green button</Button>
+    </>
+  );
+};
+
 ButtonAppearance.parameters = {
   docs: {
     description: {
