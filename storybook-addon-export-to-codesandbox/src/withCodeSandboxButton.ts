@@ -82,7 +82,9 @@ const displayToolState = (selector: string, context: StoryContext) => {
         // use originalStoryFn because users can override the `storyName` property.
         // We need the name of the exported function, not the actual story
         // https://github.com/microsoft/fluentui-storybook-addons/issues/12
-        content: indexTsx.replace('STORY_NAME', context.originalStoryFn.name.replaceAll(' ', '')),
+        // originalStoryFn.name someties looks like this: ProgressBarDefault_stories_Default
+        // just get the "Default"
+        content: indexTsx.replace('STORY_NAME', context.originalStoryFn.name.split('_stories_').slice(-1).pop()),
       },
       'package.json': {
         isBinary: false,
