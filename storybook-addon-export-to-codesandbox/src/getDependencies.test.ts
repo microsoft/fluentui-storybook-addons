@@ -6,11 +6,19 @@ describe('getDependencies', () => {
       import { stuff } from 'dependency';
       import * as allStuff from 'dependency1';
       import { moreStuff } from '@dependency/dependency';
+      import {
+        someOtherStuff,
+      } from "@multiline/importDouble";
+      import {
+        someOtherStuff,
+      } from '@multiline/import';
     `;
     const deps = getDependencies(code, {}, {});
 
     expect(deps).toEqual({
       '@dependency/dependency': 'latest',
+      '@multiline/importDouble': 'latest',
+      '@multiline/import': 'latest',
       dependency: 'latest',
       dependency1: 'latest',
     });
