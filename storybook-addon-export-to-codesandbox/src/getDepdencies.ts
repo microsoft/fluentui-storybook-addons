@@ -12,7 +12,7 @@ export const getDependencies = (
   requiredDependencies: PackageDependencies,
   optionalDependencies: PackageDependencies,
 ) => {
-  const matches = fileContent.matchAll(/import .* from ['"](.*?)['"];/g);
+  const matches = fileContent.matchAll(/from ['"](.*?)['"];/g);
 
   const dependenciesInCode = Array.from(matches).reduce((dependencies, match) => {
     if (!match[1].startsWith('react/')) {
